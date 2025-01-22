@@ -108,7 +108,7 @@ public class Main
 				File studentFile = new File(theoreticalFilePath);
 				
 				// TODO modify tag
-				if(studentFile.exists()) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Exists",409);}
+				if(studentFile.exists()) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Exists",409	);}
 				
 				InputStream bodyStream = httpExchange.getRequestBody();
 				byte[] bodyData = bodyStream.readAllBytes();
@@ -118,7 +118,7 @@ public class Main
 				try
 				{
 					JsonObject jsonStudent = new Gson().fromJson(bodyString, JsonObject.class);
-				}catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"Json parse fail, or malformed json provided",400);return;}
+				}catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"Json Fail. Not JSON or Malformed JSON",415);return;}
 				
 				SimpleWriter.writeString(bodyString,studentFile);
 				
