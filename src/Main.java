@@ -34,7 +34,7 @@ public class Main
 				
 				if(requestedStudentString.isEmpty())
 				{
-					HttpTools.returnStringToHttpExchange(httpExchange, "{}", 400);
+					HttpTools.returnStringToHttpExchange(httpExchange, "No Request Made", 400);
 					return;
 				}
 				
@@ -43,7 +43,7 @@ public class Main
 					Integer.parseInt(requestedStudentString.get());
 				} catch(NumberFormatException nfex)
 				{
-					HttpTools.returnStringToHttpExchange(httpExchange, "{}", 400);
+					HttpTools.returnStringToHttpExchange(httpExchange, "Not A Student Number", 400);
 					return;
 				}
 				
@@ -53,13 +53,13 @@ public class Main
 				
 				File studentFile = new File(theoreticalFilePath);
 				
-				if(!studentFile.exists()) {HttpTools.returnStringToHttpExchange(httpExchange,"{}",404);}
+				if(!studentFile.exists()) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Not Found",404);}
 				
 				String retString = SimpleReader.getAsString(studentFile);
 				
 				HttpTools.returnStringToHttpExchange(httpExchange,retString,200);
 			}
-			catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"{}",500);}
+			catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"Internal Error",500);}
 		}
 	}
 }
