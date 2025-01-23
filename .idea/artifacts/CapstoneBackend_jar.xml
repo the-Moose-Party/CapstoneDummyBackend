@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CapstoneBackend:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CapstoneBackend_jar</output-path>
+    <root id="archive" name="CapstoneBackend.jar">
+      <element id="module-output" name="CapstoneBackend" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/gson-2.8.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/PolyTool-1.7_b.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
