@@ -15,12 +15,12 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String version = "1.2.1";
+	private static final String version = "1.2.2";
 	
 	public static void main(String[] args) throws IOException
 	{
 		System.out.println("Starting server");
-		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8027),0);
+		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8227),0);
 		
 		httpServer.createContext("/dummyBackendVersion",new DummyBackendVersionHandler());
 		httpServer.createContext("/getStudentReport",new StudentReportGetterHandler());
