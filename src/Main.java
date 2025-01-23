@@ -15,18 +15,30 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
+	private static final String version = "1.2.1";
+	
 	public static void main(String[] args) throws IOException
 	{
 		System.out.println("Starting server");
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8027),0);
 		
+		httpServer.createContext("/dummyBackendVersion",new DummyBackendVersionHandler());
 		httpServer.createContext("/getStudentReport",new StudentReportGetterHandler());
-	httpServer.createContext("/addStudentReport",new StudentReportPutterHandler());
+		httpServer.createContext("/addStudentReport",new StudentReportPutterHandler());
 		
 		httpServer.setExecutor(null);
 		httpServer.start();
 		
 		System.out.println("Server up");
+	}
+	
+	private static class DummyBackendVersionHandler implements HttpHandler
+	{
+		@Override
+		public void handle(HttpExchange httpExchange) throws IOException
+		{
+			HttpTools.returnStringToHttpExchange(httpExchange,version,200);
+		}
 	}
 	
 	private static class StudentReportGetterHandler implements HttpHandler
