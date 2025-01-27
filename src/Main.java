@@ -15,7 +15,7 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String version = "1.2.2";
+	private static final String version = "1.3.0";
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -48,6 +48,9 @@ public class Main
 		{
 			try
 			{
+				// TODO authentication
+				// TODO extract authentication method
+				
 				Optional<String> requestedStudentString = HttpTools.extractRequestedQueryValue(httpExchange, "requestedStudentId");
 				
 				if(requestedStudentString.isEmpty())
@@ -89,10 +92,9 @@ public class Main
 			// Handling a PUT request with a body adapted from Google AI Summary result
 			try
 			{
-				if(!httpExchange.getRequestMethod().equalsIgnoreCase("PUT")){HttpTools.returnStringToHttpExchange(httpExchange,"Not a PUT",405);}
+				boolean overwrite = httpExchange.getRequestMethod().equalsIgnoreCase("PUT");
+				if(httpExchange.getRequestMethod().equalsIgnoreCase("POST") | overwrite){HttpTools.returnStringToHttpExchange(httpExchange,"Method needs to be POST or PUT",405);}
 				
-				// TODO modify tag
-				// TODO modification key
 				// TODO authentication check
 				// TODO extract authentication method
 				
@@ -119,8 +121,7 @@ public class Main
 				
 				File studentFile = new File(theoreticalFilePath);
 				
-				// TODO modify tag
-				if(studentFile.exists()) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Exists",409	);}
+				if(studentFile.exists() && !overwrite) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Exists with POST used",409	);}
 				
 				InputStream bodyStream = httpExchange.getRequestBody();
 				byte[] bodyData = bodyStream.readAllBytes();
