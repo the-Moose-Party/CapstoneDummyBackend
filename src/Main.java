@@ -93,7 +93,7 @@ public class Main
 			try
 			{
 				boolean overwrite = httpExchange.getRequestMethod().equalsIgnoreCase("PUT");
-				if(httpExchange.getRequestMethod().equalsIgnoreCase("POST") | overwrite){HttpTools.returnStringToHttpExchange(httpExchange,"Method needs to be POST or PUT",405);}
+				if(httpExchange.getRequestMethod().equalsIgnoreCase("POST") | httpExchange.getRequestMethod().equalsIgnoreCase("PUT")){HttpTools.returnStringToHttpExchange(httpExchange,"Method needs to be POST or PUT",405);return;}
 				
 				// TODO authentication check
 				// TODO extract authentication method
@@ -121,7 +121,7 @@ public class Main
 				
 				File studentFile = new File(theoreticalFilePath);
 				
-				if(studentFile.exists() && !overwrite) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Exists with POST used",409	);}
+				if(studentFile.exists() && !overwrite) {HttpTools.returnStringToHttpExchange(httpExchange,"Student File Exists with POST used",409	);return;}
 				
 				InputStream bodyStream = httpExchange.getRequestBody();
 				byte[] bodyData = bodyStream.readAllBytes();
