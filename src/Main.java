@@ -16,10 +16,27 @@ import java.util.Optional;
 public class Main
 {
 	private static final String version = "1.3.4";
+	private static final String studentFilesRoot = "data/studentData/preExistProgressReport/";
+	public static final File StudentRootFILE = new File(studentFilesRoot);
 	
 	public static void main(String[] args) throws IOException
 	{
 		System.out.println("Capstone Dummy Backend Version " + version);
+		
+		System.out.println("Checking file structure");
+		
+		if(StudentRootFILE.exists() && new File(studentFilesRoot).isDirectory())
+		{
+			System.out.println("--- Folder is found");
+			System.out.println("--- "+StudentRootFILE.listFiles().length + " files found");
+		}
+		else
+		{
+			System.out.println("--- Folder not found. Creating");
+			StudentRootFILE.mkdirs();
+			System.out.println("--- Success");
+		}
+		
 		System.out.println("Starting server");
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8227),0);
 		
