@@ -15,10 +15,11 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String version = "1.3.0";
+	private static final String version = "1.3.4";
 	
 	public static void main(String[] args) throws IOException
 	{
+		System.out.println("Capstone Dummy Backend Version " + version);
 		System.out.println("Starting server");
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8227),0);
 		
