@@ -130,7 +130,7 @@ public class Main
 				
 				try
 				{
-					JsonObject jsonStudent = new Gson().fromJson(bodyString, JsonObject.class);
+					new Gson().fromJson(bodyString, JsonObject.class);
 				}catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"Json Fail. Not JSON or Malformed JSON",415);return;}
 				
 				SimpleWriter.writeString(bodyString,studentFile);
