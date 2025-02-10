@@ -14,7 +14,7 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String VERSION = "1.4.4";
+	private static final String VERSION = "1.4.5	";
 	private static final String preExistTypeProgressReportRoot = "data/studentData/preExistTypeProgressReport/";
 	private static final File preExistTypeProg_FileRoot = new File(preExistTypeProgressReportRoot);
 	public static final String DATA_CATALOG_DATA_REQS_OPTIONS = "data/catalogData/ReqsOptions/";
@@ -221,7 +221,7 @@ public class Main
 				
 				Optional<String> reqReq_Option = HttpTools.extractRequestedQueryValue(httpExchange,"reqReq");
 				
-				if(reqGroup_Option.isEmpty())
+				if(reqReq_Option.isEmpty())
 				{
 					HttpTools.returnStringToHttpExchange(httpExchange,"Requested Requirement Query Missing",400);
 					return;
