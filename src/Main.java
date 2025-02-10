@@ -16,8 +16,12 @@ import java.util.Optional;
 public class Main
 {
 	private static final String version = "1.3.4";
-	private static final String studentFilesRoot = "data/studentData/preExistProgressReport/";
-	public static final File StudentRootFILE = new File(studentFilesRoot);
+	private static final String preExistTypeProgressReportRoot = "data/studentData/preExistTypeProgressReport/";
+	private static final File preExistTypeProg_FileRoot = new File(preExistTypeProgressReportRoot);
+	public static final String DATA_CATALOG_DATA_REQS_OPTIONS = "data/catalogData/ReqsOptions/";
+	private static final File courseFulfillmentOptionsRoot = new File(DATA_CATALOG_DATA_REQS_OPTIONS);
+	public static final String DATA_CATALOG_DATA_CourseDescs = "data/catalogData/CourseDescs/";
+	private static final File courseDescriptionsRoot = new File(DATA_CATALOG_DATA_CourseDescs);
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -25,17 +29,9 @@ public class Main
 		
 		System.out.println("Checking file structure");
 		
-		if(StudentRootFILE.exists() && new File(studentFilesRoot).isDirectory())
-		{
-			System.out.println("--- Folder is found");
-			System.out.println("--- "+StudentRootFILE.listFiles().length + " files found");
-		}
-		else
-		{
-			System.out.println("--- Folder not found. Creating");
-			StudentRootFILE.mkdirs();
-			System.out.println("--- Success");
-		}
+		verifyFolderStructure(preExistTypeProg_FileRoot);
+		verifyFolderStructure(courseFulfillmentOptionsRoot);
+		verifyFolderStructure(courseDescriptionsRoot);
 		
 		System.out.println("Starting server");
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8227),0);
@@ -44,10 +40,28 @@ public class Main
 		httpServer.createContext("/getStudentReport",new StudentReportGetterHandler());
 		httpServer.createContext("/addStudentReport",new StudentReportPutterHandler());
 		
+		httpServer.createContext("/getCourseFulfillmentOptions",new CourseFulfillmentOptionsHandler());
+		
+		httpServer.createContext("/getCourseDescriptions",new CourseDescriptionsGetterHandler());
+		
 		httpServer.setExecutor(null);
 		httpServer.start();
 		
 		System.out.println("Server up");
+	}
+	
+	private static void verifyFolderStructure(File folder)
+	{
+		if(folder.exists() && folder.isDirectory())
+		{
+			System.out.println("--- Folder is found");
+			System.out.println("--- " + folder.listFiles().length + " files found for " + folder.getName());
+		} else
+		{
+			System.out.println("--- Folder not found. Creating");
+			folder.mkdirs();
+			System.out.println("--- Success");
+		}
 	}
 	
 	private static class DummyBackendVersionHandler implements HttpHandler
