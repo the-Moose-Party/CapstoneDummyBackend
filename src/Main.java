@@ -15,7 +15,7 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String version = "1.3.4";
+	private static final String VERSION = "1.4.0";
 	private static final String preExistTypeProgressReportRoot = "data/studentData/preExistTypeProgressReport/";
 	private static final File preExistTypeProg_FileRoot = new File(preExistTypeProgressReportRoot);
 	public static final String DATA_CATALOG_DATA_REQS_OPTIONS = "data/catalogData/ReqsOptions/";
@@ -25,7 +25,7 @@ public class Main
 	
 	public static void main(String[] args) throws IOException
 	{
-		System.out.println("Capstone Dummy Backend Version " + version);
+		System.out.println("Capstone Dummy Backend Version " + VERSION);
 		
 		System.out.println("Checking file structure");
 		
@@ -64,12 +64,15 @@ public class Main
 		}
 	}
 	
+	// TODO
+	//  FileStructureHandler which returns a json object that is the directory tree
+	
 	private static class DummyBackendVersionHandler implements HttpHandler
 	{
 		@Override
 		public void handle(HttpExchange httpExchange) throws IOException
 		{
-			HttpTools.returnStringToHttpExchange(httpExchange,version,200);
+			HttpTools.returnStringToHttpExchange(httpExchange, VERSION,200);
 		}
 	}
 	
@@ -169,6 +172,81 @@ public class Main
 				
 				HttpTools.returnStringToHttpExchange(httpExchange,"Student Saved",200);
 			}catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"Internal Error",500);}
+		}
+	}
+	
+	private static class CourseFulfillmentOptionsHandler implements HttpHandler
+	{
+		@Override
+		public void handle(HttpExchange httpExchange) throws IOException
+		{
+			try
+			{
+				Optional<String> reqGroup_Option = HttpTools.extractRequestedQueryValue(httpExchange,"reqGroup");
+				
+				if(reqGroup_Option.isEmpty())
+				{
+					HttpTools.returnStringToHttpExchange(httpExchange,"Requested Group Query Missing",400);
+					return;
+				}
+				
+				Optional<String> reqReq_Option = HttpTools.extractRequestedQueryValue(httpExchange,"reqReq");
+				
+				if(reqGroup_Option.isEmpty())
+				{
+					HttpTools.returnStringToHttpExchange(httpExchange,"Requested Requirement Query Missing",400);
+					return;
+				}
+				
+				// TODO. generate new requirements on the fly, this only returns one single thing
+				//        or at least get a few more and then pick random if non-existent
+				
+				
+				File file = new File(DATA_CATALOG_DATA_REQS_OPTIONS+"Q_rg12345_rq54321.json");
+				
+				if(!file.exists())
+				{
+					// Should not happen when returning a dummy response as we are now
+					HttpTools.returnStringToHttpExchange(httpExchange,"File not found",404);
+					return;
+				}
+				
+				String retString = SimpleReader.getAsString(file);
+				HttpTools.returnStringToHttpExchange(httpExchange,retString,200);
+				
+			}catch(Exception ex){HttpTools.returnStringToHttpExchange(httpExchange,"Unexpected server error",500);}
+		}
+	}
+	
+	private static class CourseDescriptionsGetterHandler implements HttpHandler
+	{
+		@Override
+		public void handle(HttpExchange httpExchange) throws IOException
+		{
+			Optional<String> requestedCourseOption = HttpTools.extractRequestedQueryValue(httpExchange,"course");
+			
+			if(requestedCourseOption.isEmpty())
+			{
+				HttpTools.returnStringToHttpExchange(httpExchange,"Requested Course Query Empty",400);
+				return;
+			}
+			
+			// TODO. add as many course descriptions as possible, this only returns one
+			// TODO. add at least a couple more descriptions, and make it select a random one if a requested course doesn't exist
+			
+			File file = new File(DATA_CATALOG_DATA_CourseDescs+"Q_11111.json");
+			
+			if(!file.exists())
+			{
+				// Should not happen when returning a dummy response as we are now
+				HttpTools.returnStringToHttpExchange(httpExchange,"File not found",404);
+				return;
+			}
+			
+			String retString = SimpleReader.getAsString(file);
+			HttpTools.returnStringToHttpExchange(httpExchange,retString,200);
+			
+			
 		}
 	}
 }
