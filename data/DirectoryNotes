@@ -1,0 +1,33 @@
+
+CourseDescriptions:
+
+	Q designation:
+		real course description as ripped from mainestreet
+		incorrect course number used as file name because forgotten
+
+	M designation:
+		real course description as ripped from mainestreet
+		course number as used by the GET request on the modern student center for requesting the course description
+
+	D designation:
+		Dummy course description file made from list of course titles
+		random course number
+
+
+
+ReqsOptions:
+
+	Q designation:
+		real requirement lists as ripped from mainestreet
+		incorrect requirement numbers used as file name because forgotten
+
+	M designation:
+		real requirements as ripped from mainestreet
+		requirement numbers as used by the GET request on the modern student center for requesting the requirements
+
+	D designation:
+		Dummy requirements file made from list of courses
+		random course number
+
+
+
