@@ -70,15 +70,32 @@ public class Main
 		@Override
 		public void handle(HttpExchange httpExchange) throws IOException
 		{
-			JsonObject directory = (JsonObject) generateJsonDirectory(new File("data"));
+			Optional<String> filtersOpt = HttpTools.extractRequestedQueryValue(httpExchange,"filter");
+			String filter = filtersOpt.orElse("NONE");
+			
+			JsonElement directory = switch(filter)
+			{
+				case "studentsNoExtension" -> (JsonArray) ((JsonObject) generateJsonDirectory(preExistTypeProg_FileRoot, true)).get(preExistTypeProg_FileRoot.getName());
+				case "students" -> (JsonArray) ((JsonObject) generateJsonDirectory(preExistTypeProg_FileRoot,false)).get(preExistTypeProg_FileRoot.getName());
+				default -> (JsonObject) generateJsonDirectory(new File("data"));
+			};
 			
 			HttpTools.returnStringToHttpExchange(httpExchange,directory.toString(),200);
+			return;
 		}
 		
 		private static JsonElement generateJsonDirectory(File item)
 		{
+			return generateJsonDirectory(item,false);
+		}
+
+		private static JsonElement generateJsonDirectory(File item,boolean removeFileExtensions)
+		{
 			if(!item.isDirectory())
 			{
+				if(removeFileExtensions)
+					return new JsonPrimitive(item.getName().replace(".json",""));
+				
 				return new JsonPrimitive(item.getName());
 			}
 			
@@ -86,7 +103,7 @@ public class Main
 			
 			for(File subItem : item.listFiles())
 			{
-				subArray.add(generateJsonDirectory(subItem));
+				subArray.add(generateJsonDirectory(subItem,removeFileExtensions		));
 			}
 			
 			JsonObject myObj = new JsonObject();
