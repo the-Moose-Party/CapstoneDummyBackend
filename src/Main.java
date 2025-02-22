@@ -14,7 +14,7 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String VERSION = "1.4.5	";
+	private static final String VERSION = "1.4.6";
 	private static final String preExistTypeProgressReportRoot = "data/studentData/preExistTypeProgressReport/";
 	private static final File preExistTypeProg_FileRoot = new File(preExistTypeProgressReportRoot);
 	public static final String DATA_CATALOG_DATA_REQS_OPTIONS = "data/catalogData/ReqsOptions/";
@@ -75,8 +75,9 @@ public class Main
 			
 			JsonElement directory = switch(filter)
 			{
+				case "studentsNoExtensionParseToInt" -> (JsonArray) ((JsonObject) generateJsonDirectory(preExistTypeProg_FileRoot, true,true)).get(preExistTypeProg_FileRoot.getName());
 				case "studentsNoExtension" -> (JsonArray) ((JsonObject) generateJsonDirectory(preExistTypeProg_FileRoot, true)).get(preExistTypeProg_FileRoot.getName());
-				case "students" -> (JsonArray) ((JsonObject) generateJsonDirectory(preExistTypeProg_FileRoot,false)).get(preExistTypeProg_FileRoot.getName());
+				case "students" -> (JsonArray) ((JsonObject) generateJsonDirectory(preExistTypeProg_FileRoot)).get(preExistTypeProg_FileRoot.getName());
 				default -> (JsonObject) generateJsonDirectory(new File("data"));
 			};
 			
@@ -86,16 +87,19 @@ public class Main
 		
 		private static JsonElement generateJsonDirectory(File item)
 		{
-			return generateJsonDirectory(item,false);
+			return generateJsonDirectory(item,false,false);
 		}
 
-		private static JsonElement generateJsonDirectory(File item,boolean removeFileExtensions)
+		private static JsonElement generateJsonDirectory(File item,boolean removeFileExtensions) {return generateJsonDirectory(item,removeFileExtensions,false);}
+		
+		private static JsonElement generateJsonDirectory(File item,boolean removeFileExtensions,boolean parseToInt)
 		{
 			if(!item.isDirectory())
 			{
-				if(removeFileExtensions)
-					return new JsonPrimitive(item.getName().replace(".json",""));
-				
+				String prim = item.getName();
+				if(removeFileExtensions | parseToInt) prim = prim.replace(".json","");
+				if(parseToInt) return new JsonPrimitive(Integer.parseInt(prim));
+
 				return new JsonPrimitive(item.getName());
 			}
 			
@@ -103,7 +107,7 @@ public class Main
 			
 			for(File subItem : item.listFiles())
 			{
-				subArray.add(generateJsonDirectory(subItem,removeFileExtensions		));
+				subArray.add(generateJsonDirectory(subItem,removeFileExtensions,parseToInt));
 			}
 			
 			JsonObject myObj = new JsonObject();
@@ -118,7 +122,8 @@ public class Main
 		@Override
 		public void handle(HttpExchange httpExchange) throws IOException
 		{
-			HttpTools.returnStringToHttpExchange(httpExchange, VERSION,200);
+			System.out.println("H 125 " + httpExchange);	
+			HttpTools.returnStringToHttpExchange(httpExchange, "{\"Version\":\""+VERSION+"\"}",200);
 		}
 	}
 	

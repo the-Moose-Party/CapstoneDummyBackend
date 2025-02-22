@@ -15,7 +15,7 @@ public class PutTest
 		
 		String requestBody = studentWithName;
 		
-		// More or less completely copied from https://restful-api.dev/send-a-put-request-java/
+			// More or less completely copied from https://restful-api.dev/send-a-put-request-java/
 		
 		HttpRequest request = HttpRequest.newBuilder()
 				.PUT(HttpRequest.BodyPublishers.ofString(requestBody))
