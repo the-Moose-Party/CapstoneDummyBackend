@@ -34,7 +34,7 @@ public class HttpTools
 	public static void returnStringToHttpExchange(HttpExchange httpExchange,String string,int code) throws IOException
 	{
 		// Google AI Overview result used to know how to use string compared to my old KML one
-		
+		httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		httpExchange.sendResponseHeaders(code,string.getBytes().length);
 		OutputStream os = httpExchange.getResponseBody();
 		os.write(string.getBytes());

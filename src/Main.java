@@ -2,6 +2,7 @@ import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import io.github.greenwolf24.PolyTool.Files.CSV.ReadCsvFile;
 import io.github.greenwolf24.PolyTool.Files.SimpleReader;
 import io.github.greenwolf24.PolyTool.Files.SimpleWriter;
 
@@ -14,13 +15,15 @@ import java.util.Optional;
 // dummy backend, simply grabs the requested file if available
 public class Main
 {
-	private static final String VERSION = "1.4.6";
+	private static final String VERSION = "1.5.2";
 	private static final String preExistTypeProgressReportRoot = "data/studentData/preExistTypeProgressReport/";
 	private static final File preExistTypeProg_FileRoot = new File(preExistTypeProgressReportRoot);
 	public static final String DATA_CATALOG_DATA_REQS_OPTIONS = "data/catalogData/ReqsOptions/";
 	private static final File courseFulfillmentOptionsRoot = new File(DATA_CATALOG_DATA_REQS_OPTIONS);
-	public static final String DATA_CATALOG_DATA_CourseDescs = "data/catalogData/CourseDescs/";
-	private static final File courseDescriptionsRoot = new File(DATA_CATALOG_DATA_CourseDescs);
+	//public static final String DATA_CATALOG_DATA_CourseDescs = "data/catalogData/CourseDescs/";
+	//private static final File courseDescriptionsRoot = new File(DATA_CATALOG_DATA_CourseDescs);
+	private static final String DATA_COURSES_COURSE2SJSON = "data/Courses/Course2sJson/";
+	private static final File course2sClassJsonsRoot = new File(DATA_COURSES_COURSE2SJSON);
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -30,7 +33,7 @@ public class Main
 		
 		verifyFolderStructure(preExistTypeProg_FileRoot);
 		verifyFolderStructure(courseFulfillmentOptionsRoot);
-		verifyFolderStructure(courseDescriptionsRoot);
+		verifyFolderStructure(course2sClassJsonsRoot);
 		
 		System.out.println("Starting server");
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(8227),0);
@@ -274,30 +277,78 @@ public class Main
 		@Override
 		public void handle(HttpExchange httpExchange) throws IOException
 		{
-			Optional<String> requestedCourseOption = HttpTools.extractRequestedQueryValue(httpExchange,"course");
+			Optional<String> requested = HttpTools.extractRequestedQueryValue(httpExchange,"requested");
+			Optional<String> numType = HttpTools.extractRequestedQueryValue(httpExchange,"numType");
+			Optional<String> retType = HttpTools.extractRequestedQueryValue(httpExchange,"retType");
 			
-			if(requestedCourseOption.isEmpty())
+			if(requested.isEmpty() | numType.isEmpty() | retType.isEmpty())
 			{
-				HttpTools.returnStringToHttpExchange(httpExchange,"Requested Course Query Empty",400);
+				HttpTools.returnStringToHttpExchange(httpExchange,"Missing Query",400);
 				return;
 			}
 			
-			// TODO. add as many course descriptions as possible, this only returns one
-			// TODO. add at least a couple more descriptions, and make it select a random one if a requested course doesn't exist
+			String reqNumString = requested.get();
+			String numTypeString = numType.get();
+			String retTypeString = retType.get();
 			
-			File file = new File(DATA_CATALOG_DATA_CourseDescs+"Q_11111.json");
+			String referenceNum = "";
+			
+			if(numTypeString.equals("MOOSE_class2s")) referenceNum = reqNumString;
+			
+			if(numTypeString.equals("MOOSE_crse_id")) referenceNum = crse_id_toClass2sNum(reqNumString);
+			
+			if(numTypeString.equals("MOOSE_courseName")) referenceNum = courseNameToClass2sNum(reqNumString);
+			
+			if(numTypeString.equals("MOOSE_catalogID")) referenceNum = catalogIdToClass2sNum(reqNumString);
+			
+			// TODO. implement more ways to get the reference number
+			
+			// TODO. implement returning according to retType
+			
+			File file = new File(DATA_COURSES_COURSE2SJSON +referenceNum+".json");
 			
 			if(!file.exists())
 			{
-				// Should not happen when returning a dummy response as we are now
 				HttpTools.returnStringToHttpExchange(httpExchange,"File not found",404);
 				return;
 			}
 			
 			String retString = SimpleReader.getAsString(file);
 			HttpTools.returnStringToHttpExchange(httpExchange,retString,200);
+		}
+		
+		private static final String[][] courseNameToCourse2sClassNumCSV = new ReadCsvFile(new File("data/Courses/courseNameToCourse2sClassNum.reduced.csv")).getAsStringsArray();
+		
+		private static String crse_id_toClass2sNum(String crse_id)
+		{
+			// we currently have no way to do this
+			// so we will return a random one
 			
+			return courseNameToCourse2sClassNumCSV[(int)(Math.random()*courseNameToCourse2sClassNumCSV.length)][1];
+		}
+		
+		private static String catalogIdToClass2sNum(String catalogId)
+		{
+			// we currently have no way to do this
+			// so we will return a random one
 			
+			return courseNameToCourse2sClassNumCSV[(int)(Math.random()*courseNameToCourse2sClassNumCSV.length)][1];
+		}
+		
+		private static String courseNameToClass2sNum(String name)
+		{
+			String lookFor = name.replace(" ","").toUpperCase();
+			
+			for(String[] line : courseNameToCourse2sClassNumCSV)
+			{
+				if(line[0].equals(lookFor))
+				{
+					return line[1];
+				}
+			}
+			
+			// if we fail, return a random one
+			return courseNameToCourse2sClassNumCSV[(int)(Math.random()*courseNameToCourse2sClassNumCSV.length)][1];
 		}
 	}
 }
